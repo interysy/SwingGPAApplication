@@ -27,16 +27,22 @@ public class SwingGPACalc extends JFrame implements ActionListener, ListSelectio
     private JTextField newCreditField;
     private JLabel errorLabel;
     private JButton addPreloadedBtn;
+    private JButton neededForTargetBtn;
+    private JButton examGradeBtn;
+    private JButton exitButton;
 
 
     private final DefaultListModel<Module> moduleModel = new DefaultListModel<>();
     private final DefaultListModel<Module> preloadedModel = new DefaultListModel<>();
+    private final DefaultListModel<Coursework> components = new DefaultListModel<>();
 
     private final Path path;
     private Module selected = null;
+    private int mode = 0;
+    // 0 = GPA , 1 = Target Grade , 2 = Exam Grade
+
 
     public SwingGPACalc(Path path, List<Module> preloadedList) {
-
         this.path = path;
         for (Module module : preloadedList) {
             preloadedModel.addElement(module);
@@ -49,7 +55,7 @@ public class SwingGPACalc extends JFrame implements ActionListener, ListSelectio
 
         setContentPane(mainPanel);
         setTitle("GPA Calculator");
-        setSize(700, 600);
+        setSize(800, 600);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -59,6 +65,9 @@ public class SwingGPACalc extends JFrame implements ActionListener, ListSelectio
         changeBtn.addActionListener(this);
         calculateBtn.addActionListener(this);
         addPreloadedBtn.addActionListener(this);
+        neededForTargetBtn.addActionListener(this);
+        examGradeBtn.addActionListener(this);
+        exitButton.addActionListener(this);
 
         newGradeField.setEnabled(false);
         changeGradeBtn.setEnabled(false);
@@ -72,33 +81,41 @@ public class SwingGPACalc extends JFrame implements ActionListener, ListSelectio
     public void actionPerformed(ActionEvent e) {
         JButton source = (JButton) e.getSource();
         if (addBtn.equals(source)) {
-            try {
-                JTextField moduleName = new JTextField();
-                JComboBox<Grade> grade = new JComboBox<>(Grade.values());
-                JTextField credit = new JTextField(2);
-                String msg = "Enter name,grade and amount of credits...";
-                int result = JOptionPane.showOptionDialog(this, new Object[]{msg, moduleName, grade, credit}, "Module Adder", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-                System.out.println(result);
-                if (result == 0) {
-                    String moduleName2 = moduleName.getText();
-                    Grade gradeToAdd = (Grade) grade.getSelectedItem();
-                    int creditToAdd = Integer.parseInt(credit.getText());
-                    Module newModule = new Module(moduleName2, creditToAdd, gradeToAdd);
+            if (mode == 0 ) {
+                try {
+                    JTextField moduleName = new JTextField();
+                    JComboBox<Grade> grade = new JComboBox<>(Grade.values());
+                    JTextField credit = new JTextField(2);
+//                amountFormat = NumberFormat.getNumberInstance();
+//                amountField = new JFormattedTextField(amountFormat);
+//                amountField.setValue(new Double(amount));
+//                amountField.setColumns(10);
+//                amountField.addPropertyChangeListener("value", this);
+                    String msg = "Enter name,grade and amount of credits...";
+                    int result = JOptionPane.showOptionDialog(this, new Object[]{msg, moduleName, grade, credit}, "Module Adder", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
                     System.out.println(result);
+                    if (result == 0) {
+                        String moduleName2 = moduleName.getText();
+                        Grade gradeToAdd = (Grade) grade.getSelectedItem();
+                        int creditToAdd = Integer.parseInt(credit.getText());
+                        Module newModule = new Module(moduleName2, creditToAdd, gradeToAdd);
 
-                    if (moduleModel.contains(newModule)) {
-                        errorLabel.setText("Module has already been added");
-                    } else {
-                        moduleModel.addElement(newModule);
-                        selected = newModule;
-                        setSubject();
-                        if (!preloadedModel.contains(newModule)) {
-                            FileManipulator.writeToFile(path, moduleName2, creditToAdd);
+                        if (moduleModel.contains(newModule)) {
+                            errorLabel.setText("Module has already been added");
+                        } else {
+                            moduleModel.addElement(newModule);
+                            selected = newModule;
+                            setSubject();
+                            if (!preloadedModel.contains(newModule)) {
+                                FileManipulator.writeToFile(path, moduleName2, creditToAdd);
+                            }
                         }
                     }
+                } catch (NumberFormatException e2) {
+                    System.out.println("Something went wrong");
                 }
-            } catch (NumberFormatException e2) {
-                System.out.println("Something went wrong");
+            } else if (mode == 1) {
+                System.out.println("Here I will add name + worth for coursework");
             }
         } else if (removeBtn.equals(source)) {
             int indexOfSelected = moduleList.getSelectedIndex();
@@ -147,6 +164,19 @@ public class SwingGPACalc extends JFrame implements ActionListener, ListSelectio
                 }
             }
 
+        } else if (examGradeBtn.equals(source)) {
+            mode = 2;
+            moduleList.setModel(components);
+            gpaLabel.setText("Please add relevant coursework pieces to what was the module box");
+            JComboBox<Grade> grade = new JComboBox<>(Grade.values());
+            JLabel msg = new JLabel("Please enter your overall grade grade");
+            int result = JOptionPane.showOptionDialog(this, new Object[]{msg,grade}, "Overall Grade Adder", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+            if (result == 0) {
+                FinalGrade finalGrade = new FinalGrade((Grade) grade.getSelectedItem());
+                components.addElement(finalGrade);
+
+            }
+
         }
 
 
@@ -155,7 +185,6 @@ public class SwingGPACalc extends JFrame implements ActionListener, ListSelectio
     public static void main(String[] args) {
         Path path = Paths.get("src/GPACalc/modules");   // need to fill in path
         List<Module> preloaded = FileManipulator.readFile(path);
-        System.out.println(preloaded);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -188,7 +217,7 @@ public class SwingGPACalc extends JFrame implements ActionListener, ListSelectio
     public void valueChanged(ListSelectionEvent e) {
         selected = (Module) moduleList.getSelectedValue();
         if (selected == null) {
-            subjectLabel.setText("Choose or add subject");
+            subjectLabel.setText("Choose or add subject / coursework");
             newGradeField.setEnabled(false);
             changeGradeBtn.setEnabled(false);
             newCreditField.setEnabled(false);

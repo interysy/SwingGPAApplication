@@ -10,6 +10,7 @@ public enum Grade {
 
     private final int grade;
     private static Map<Integer, Grade> conversion = new HashMap<>();
+    private static Map<Grade,Double> conversion2 = new HashMap<>();
 
     Grade(int grade) {
 
@@ -27,5 +28,16 @@ public enum Grade {
             conversion.put(grade1.getGrade(), grade1);
         }
         return conversion.get(nGrade);
+    }
+
+    public static double getPercentage(Grade grade) {
+        double[] dummyList = {92,85,79,74,70,67,64,60,57,54,50,47,44,40,37,34,30,27,24,20,15,10,0};
+        for (int i = 0; i < dummyList.length; i++) {
+            conversion2.put(Grade.values()[i],dummyList[i]);
+        }
+
+        return conversion2.get(grade);
+
+
     }
 }

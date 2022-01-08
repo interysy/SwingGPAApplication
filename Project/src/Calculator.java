@@ -17,5 +17,24 @@ public class Calculator {
 
     }
 
+    public static Grade calculateExamGrade(List<Coursework> courseworkList,Grade finalGrade) {
+        double totalToSubtract = 0;
+        double totalWorth =0;
+
+        for (Coursework coursework : courseworkList) {
+            totalWorth += coursework.getWorth();
+            totalToSubtract += coursework.worthXPoints();
+        }
+        int gradeAsPoints = finalGrade.getGrade();
+        double examWorth = 100 - totalWorth;
+
+        double result = (gradeAsPoints - totalToSubtract) / examWorth;
+        int result2 = (int) Math.round(result);
+        return Grade.getAlphaGrade(result2);
+
+
+    }
+
+
 }
 
