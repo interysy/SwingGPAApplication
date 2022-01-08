@@ -1,15 +1,9 @@
-package GPACalc;
+package GPACalcV2a;
 
-public class FinalGrade extends Coursework{
-
+public class FinalGrade extends Coursework {
 
     public FinalGrade(Grade grade) {
-        super("Overall Grades");
-
-    }
-
-    public String toString() {
-        return this.getName();
+        super("Final Grade", grade, 0);
     }
 
 }

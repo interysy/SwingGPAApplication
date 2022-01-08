@@ -1,5 +1,4 @@
-package GPACalc;
-
+package GPACalcV2a;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,14 +17,14 @@ public enum Grade {
 
     }
 
-    public int getGrade() {
+    public int getNumericalGrade() {
         return grade;
     }
 
 
     public static Grade getAlphaGrade(int nGrade) {
         for (Grade grade1 : Grade.values()) {
-            conversion.put(grade1.getGrade(), grade1);
+            conversion.put(grade1.getNumericalGrade(), grade1);
         }
         return conversion.get(nGrade);
     }

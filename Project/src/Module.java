@@ -1,51 +1,27 @@
-package GPACalc;
+package GPACalcV2a;
 
 import java.util.Objects;
 
-public class Module {
+public class Module extends JListObject {
 
-    private String moduleName;
     private int credits;
-    private Grade grade;
 
-    public Module(String moduleName, int credits, Grade grade) {
-        this.moduleName = moduleName;
+    public Module(String name, Grade grade, int credits) {
+        super(name, grade);
         this.credits = credits;
-        this.grade = grade;
 
     }
 
     public int creditsMgrade() {
-        return credits * grade.getGrade();
-
+        return credits * this.getGrade().getNumericalGrade();
     }
 
     public int getCredits() {
         return credits;
     }
 
-    public Grade getGrade() {
-        return grade;
-    }
-
-    public String getModuleName() {
-        return moduleName;
-    }
-
     public void setCredits(int credits) {
         this.credits = credits;
-    }
-
-    public void setGrade(Grade grade) {
-        this.grade = grade;
-    }
-
-    public void setModuleName(String name) {
-        this.moduleName = name;
-    }
-
-    public String toString() {
-        return moduleName;
     }
 
     @Override
@@ -53,11 +29,11 @@ public class Module {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Module module = (Module) o;
-        return credits == module.credits && moduleName.equals(module.moduleName);
+        return credits == module.credits && name.equals(module.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(moduleName, credits);
+        return Objects.hash(credits);
     }
 }

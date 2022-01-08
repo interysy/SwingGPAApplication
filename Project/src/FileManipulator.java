@@ -1,4 +1,4 @@
-package GPACalc;
+package GPACalcV2a;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -23,7 +23,7 @@ public class FileManipulator {
                         String[] splitLine = line.strip().split(" ");
                         int credits = Integer.parseInt(splitLine[splitLine.length - 1]);
                         String name = IntStream.range(0, splitLine.length - 1).mapToObj(i -> splitLine[i]).collect(Collectors.joining(" "));
-                        Module module = new Module(name, credits, null);
+                        Module module = new Module(name, null, credits);
                         result.add(module);
                     }
                 }

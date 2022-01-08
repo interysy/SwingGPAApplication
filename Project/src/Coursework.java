@@ -1,19 +1,23 @@
-package GPACalc;
+package GPACalcV2a;
 
-public class Coursework{
+public class Coursework extends JListObject {
 
-    private String name;
-    private double worth;
-    private Grade grade;
+    private int worth;
 
+    public Coursework(String name, Grade grade, int worth) {
+        super(name, grade);
+        this.worth = worth;
 
-    public Coursework(String name) {
-        this.name = name;
+    }
+
+    public void setWorth(int worth) {
+        this.worth = worth;
+
     }
 
     public double worthXPoints() {
-        return worth*grade.getGrade();
-
+        double gradeNum = this.getGrade().getNumericalGrade();
+        return (this.getWorth() / 100) * gradeNum;
 
     }
 
@@ -21,7 +25,4 @@ public class Coursework{
         return worth;
     }
 
-    public String getName() {
-        return name;
-    }
 }
